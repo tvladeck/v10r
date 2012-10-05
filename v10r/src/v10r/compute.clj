@@ -4,12 +4,6 @@
   (:require [v10r.state :as state])
   (:require [clojure.core.reducers :as par]))
 
-(defn add-scenario-key
-  [row-of-matrix]
-  (flatten
-    (reduce conj
-            (map-indexed (fn [index item] [index item]) row-of-matrix))))
-
 (defn compute-and-set-market
   "
   core function of the namespace. takes a vector of scenarios and a market-id. 
@@ -21,8 +15,8 @@
   sends the current market sumexp to state/set-market-sum
 
   "
-  [scenarios alpha key]
-  (let [market            (state/get-market key)
+  [scenarios alpha market-id]
+  (let [market            (state/get-market market-id)
         liq               (* alpha (i/sum market))
         exp-normed-market (i/exp (i/div market liq))
         exp-normed-scens  (i/exp (i/div scenarios liq))
@@ -30,10 +24,10 @@
         mapped-scens      (i/minus (i/mmult exp-normed-market (i/trans exp-normed-scens)) market-dummy)
         market-sum        (i/sum exp-normed-market)
         num-scenarios     (count scenarios)]
-    (state/set-market-sum key market-sum liq)
+    (state/set-market-sum market-id market-sum liq)
     (dorun
       (map
         (fn [index]
-          (state/set-scenario (i/$ index (i/trans mapped-scens)) index key))
+          (state/set-scenario (i/$ index (i/trans mapped-scens)) index market-id))
         (range 0 num-scenarios)))))
 
