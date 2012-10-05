@@ -26,6 +26,21 @@
   [^Integer key]
   (carmine (r/hvals key)))
 
+(defn create-redis-key
+  "
+  creates the key that will serve to identify a market and a scenario
+  in the redis store
+
+  the format of the key is:
+
+  M1S1
+
+  where M1 = Market 1
+  and S1 = Scenario 1
+  "
+  [market-id scenario-id]
+  (string/join ["M" market-id "S" scenario-id]))
+
 (defn set-scenario
   "
   core function of the namespace. takes a vector of the atomic impacts of a single position
@@ -47,9 +62,6 @@
           (fn [index item] (vector index item) 
           vector)))))
 
-(defn get-event
-  [market-id event-id]
-  (carmine (r/hvals (create-delta-keyword market-id event-id))))
 
 (defn get-total
   [market-id]
