@@ -26,6 +26,37 @@
   [^Integer key]
   (carmine (r/hvals key)))
 
+(defn set-scenario
+  "
+  core function of the namespace. takes a vector of the atomic impacts of a single position
+  movement scenario, along with an integer representing the scenario, and a market id, and sets
+  the scenario in redis with the following format
+
+  HMSET M1S1 0 atomic-increase 1 atomic-increase ...
+
+  where M1S1 = Market 1, Scenario 1, 
+  the 0, 1, 2, ... are the fields representing positions in the vector, and
+  the atomic-increases are the scenario-specific atomic increases to sumexp
+  "
+  [atomic-increase-vector scenario market-id]
+  (carmine
+    (apply r/hmset)
+      (create-redis-key market-id scenario) 
+      (flatten
+        (map-indexed
+          (fn [index item] (vector index item) 
+          vector)))))
+
+(defn get-event
+  [market-id event-id]
+  (carmine (r/hvals (create-delta-keyword market-id event-id))))
+
+(defn get-total
+  [market-id]
+  (carmine (r/hvals (string/join ["m" market-id]))))
+
+;; Deprecated
+;;
 (defn create-delta-keyword
   "
   function to create a unique ID for all the logsumexp scenarios recorded by the compute namespace.
@@ -45,13 +76,4 @@
     (apply r/hmset
       (create-delta-keyword market-id event-id)
       event-vec)))
-
-(defn get-event
-  [market-id event-id]
-  (carmine (r/hvals (create-delta-keyword market-id event-id))))
-
-(defn get-total
-  [market-id]
-  (carmine (r/hvals (string/join ["m" market-id]))))
-
 

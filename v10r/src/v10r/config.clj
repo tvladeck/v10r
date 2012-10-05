@@ -1,4 +1,5 @@
-(ns v10r.config)
+(ns v10r.config
+  (:require [taoensso.carmine :as r]))
 
 ;; REDIS configuration
 (def pool (r/make-conn-pool :max-active 8))
@@ -12,10 +13,10 @@
 (def alpha (/ 0.02 (* 1024 (Math/log 1024))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;NON APP HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn create-market
-  [key no-events]
-  (map #(carmine (r/hset key % (rand-int 100))) (range 0 no-events)))
-
-(defn create-markets
-  [no-events no-markets]
-  (map #(create-market % no-events) (range 0 no-markets)))
+;(defn create-market
+;  [key no-events]
+;  (map #(carmine (r/hset key % (rand-int 100))) (range 0 no-events)))
+;
+;(defn create-markets
+;  [no-events no-markets]
+;  (map #(create-market % no-events) (range 0 no-markets)))
