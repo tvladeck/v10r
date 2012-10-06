@@ -3,35 +3,27 @@
   (:require [clojure.string :as string])
   (:use v10r.config))
 
-
-(defmacro carmine
-  "
-  Opens a connection to Redis.
-  Acts like (partial with-conn pool spec-server1).
-  "
-  [& body] `(r/with-conn pool spec-server1 ~@body))
-
 (defn set-market-sum
   "
   takes a market-id and sets the initial sum and liquidity of the market
   "
   [market-id sum liquidity]
   (carmine
-    (r/hmset (string/join ["m" market-id]) "sum" sum "liquidity" liquidity)))
+    (r/hmset (string/join ["M" market-id]) "SUM" sum "LIQ" liquidity)))
 
 (defn get-market
   "
   takes a market-id and returns a vector of event quantities within the market
   "
-  [^Integer key]
-  (carmine (r/hvals key)))
+  [market-id]
+  (carmine (r/hvals market-id)))
 
-(defn create-redis-key
+(defn create-redis-keyword
   "
-  creates the key that will serve to identify a market and a scenario
+  creates the keyword that will serve to identify an markets price vector and a scenario
   in the redis store
 
-  the format of the key is:
+  the format of the market-id is:
 
   M1S1
 
@@ -55,12 +47,12 @@
   "
   [atomic-increase-vector scenario market-id]
   (carmine
-    (apply r/hmset)
-      (create-redis-key market-id scenario) 
+    (apply r/hmset
+      (create-redis-keyword market-id scenario) 
       (flatten
         (map-indexed
-          (fn [index item] (vector index item) 
-          vector)))))
+          (fn [index item] (vector index item))
+          atomic-increase-vector)))))
 
 
 (defn get-total
