@@ -43,4 +43,17 @@
           (state/set-scenario (i/$ index sumexp-diff) index market-id))
         (range 0 num-scenarios)))))
 
+(defn compute-and-set-market-with-message
+  [scenarios alpha market-id message]
+  (do
+    (compute-and-set-market scenarios alpha market-id)
+    (state/send-message market-id message)))
+
+
+(defn infinite-loop
+  [scenarios alpha market-id]
+  (loop [message 1]
+    (compute-and-set-market-with-message
+      scenarios alpha market-id message)
+    (recur (+ message 1))))
 

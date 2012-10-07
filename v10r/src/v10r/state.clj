@@ -55,7 +55,6 @@
           (fn [index item] (vector index item))
           atomic-increase-vector)))))
 
-(defn get-total
-  [market-id]
-  (carmine (r/hvals (string/join ["m" market-id]))))
-
+(defn send-message
+  [channel message]
+  (carmine (r/publish channel message)))
