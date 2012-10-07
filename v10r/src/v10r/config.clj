@@ -2,7 +2,6 @@
   (:require [taoensso.carmine :as r]))
 
 ;; REDIS configuration
-
 (def pool (r/make-conn-pool :max-active 8))
 
 (def spec-server1 (r/make-conn-spec :host     "127.0.0.1"
@@ -27,5 +26,4 @@
 (defn create-markets
   [no-events no-markets]
   (map #(create-market % no-events) (range 0 no-markets)))
-
 

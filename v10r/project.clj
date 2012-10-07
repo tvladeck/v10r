@@ -8,7 +8,7 @@
                  [incanter/incanter "1.3.0-SNAPSHOT"
                       :exclusions [incanter/incanter-core]]
                  [uk.co.forward/incanter-core-jblas "1.3.0-SNAPSHOT"]
-                 [com.taoensso/carmine "0.10.1"]
+                 [com.taoensso/carmine "0.11.1"]
                  [jblas/jblas "1.2.1"]
                  [jblas/native "1.2.0"]
                  [criterium "0.3.0"]
