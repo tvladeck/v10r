@@ -14,16 +14,26 @@
   "
   [& body] `(r/with-conn pool spec-server1 ~@body))
 
-(def scenarios [-10 10])
+(def SCENARIOS [-10 10])
 
-(def alpha (/ 0.1 (* 1024 (Math/log 1024))))
+(def BASE 10)
+
+(def ATOMS (Math/pow 2 BASE))
+
+(def ALPHA (/ 0.1 (* ATOMS (Math/log ATOMS))))
+
+(def INIT-BETA 1000)
+
+(def INIT-TOTAL (/ INIT-BETA ALPHA))
+
+(def INIT-INDIVIDUAL (/ INIT-TOTAL ATOMS))
 
 ;;;;;;;;;;;;;;;;;;;;;;;NON APP HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn create-market
   [key no-events]
-  (map #(carmine (r/hset key % 69314)) (range 0 no-events)))
+  (map #(carmine (r/hset key % 10)) (range 0 no-events)))
 
 (defn create-markets
-  [no-events no-markets]
+  [no-events no-markets]  (map #(create-market % no-events) (range 0 no-markets))
   (map #(create-market % no-events) (range 0 no-markets)))
 

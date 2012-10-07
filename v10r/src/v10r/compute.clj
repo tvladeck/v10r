@@ -13,18 +13,30 @@
   sends the vector of increases along with scenarios to state/set-event. 
 
   sends the current market sumexp to state/set-market-sum
+
+  calculation works as follows
+
+  DELTA = INIT-INDIVIDUAL + beta * log sum_i exp (q_i + d_i) / beta - INIT-INDVIDUAL + beta * log sum_i exp q_i / beta
+        = beta * log sum_i (exp q_i / beta) * (exp d_i / beta) - beta * log sum_i exp q_i / beta
+        = beta * log sum_i (exp q_i / beta) + sumexp-diff - beta * log sum_i exp q_i / beta
+
+  mapped-scens = (exp q_i / beta) * (exp d_i / beta)
+  exp-normed-market = exp q_i / beta
+  sumexp-diff = (exp q_i / beta) * (exp d_i / beta) - exp q_i / beta
+  market-sum = log sum_i exp q_i / beta
+
   "
   [scenarios alpha market-id]
   (let [market            (state/get-market market-id)
-        liq               (* alpha (i/sum market))
-        exp-normed-market (i/exp (i/div market liq))
-        exp-normed-scens  (i/exp (i/div scenarios liq))
+        beta              (* alpha (+ INIT-TOTAL (i/sum market)))
+        exp-normed-market (i/exp (i/div market beta))
+        exp-normed-scens  (i/exp (i/div scenarios beta))
         mapped-scens      (i/mmult exp-normed-market (i/trans exp-normed-scens))
         market-dummy      (i/trans (repeat (count scenarios) exp-normed-market))
         sumexp-diff       (i/minus mapped-scens market-dummy)
         market-sum        (i/sum exp-normed-market)
         num-scenarios     (count scenarios)]
-    (state/set-market-sum market-id market-sum liq)
+    (state/set-market-sum market-id market-sum beta)
     (doall
       (map
         (fn [index]

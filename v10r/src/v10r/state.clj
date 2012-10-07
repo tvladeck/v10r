@@ -7,16 +7,17 @@
   "
   takes a market-id and sets the initial sum and liquidity of the market
   "
-  [market-id sum liquidity]
+  [market-id sum beta]
   (carmine
-    (r/hmset (string/join ["M" market-id]) "SUM" sum "LIQ" liquidity)))
+    (r/hmset (string/join ["M" market-id]) "SUM" sum "BETA" beta)))
 
 (defn get-market
   "
   takes a market-id and returns a vector of event quantities within the market
   "
   [market-id]
-  (carmine (r/hvals market-id)))
+  (map #(Integer/parseInt %)
+       (carmine (r/hvals market-id))))
 
 (defn create-redis-keyword
   "
@@ -53,7 +54,6 @@
         (map-indexed
           (fn [index item] (vector index item))
           atomic-increase-vector)))))
-
 
 (defn get-total
   [market-id]
