@@ -1,11 +1,11 @@
 (ns v10r.config
   (:require [taoensso.carmine :as r]))
 
-;; REDIS configuration
-(def pool (r/make-conn-pool :max-active 8))
+;;;;;;;;;;;;;;;;;;;;;;;REDIS CONFIGURATION;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
-(def spec-server1 (r/make-conn-spec :host     "127.0.0.1"
-                                    :port     6379))
+(def pool (r/make-conn-pool :max-active 8)) 
+(def spec-server1 (r/make-conn-spec   :host     "127.0.0.1"
+                                      :port     6379))
 
 (defmacro carmine
   "
@@ -14,6 +14,7 @@
   "
   [& body] `(r/with-conn pool spec-server1 ~@body))
 
+;;;;;;;;;;;;;;;;;;;;;;;CONSTANTS;;;;;;;;;;;;;;;;;;;;;;;;;; 
 (def SCENARIOS [-10 10])
 
 (def BASE 10)
@@ -38,11 +39,4 @@
 (defn create-markets
   [no-events no-markets]  (map #(create-market % no-events) (range 0 no-markets))
   (map #(create-market % no-events) (range 0 no-markets)))
-
-(defn testfn
-  [number string]
-  (try (+ number string)
-  (catch Exception exception-name (print (.toString exception-name)))
-  (finally (print "finally"))))
-
 
