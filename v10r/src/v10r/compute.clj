@@ -37,11 +37,9 @@
         num-scenarios     (count scenarios)]
     (do
       (state/set-market-sum market-id market-sum beta)
-      (doall
-        (map
-          (fn [index]
-            (state/set-scenario (i/$ index sumexp-diff) index market-id))
-          (range 0 num-scenarios)))
+      (doseq
+        [index (range 0 num-scenarios)]
+        (state/set-scenario (i/$ index sumexp-diff) index market-id))
       (state/set-status-ok market-id))))
 
 (defn robust-compute-and-set-market
