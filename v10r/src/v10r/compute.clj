@@ -3,13 +3,13 @@
   (:require [incanter.core :as i])
   (:require [v10r.state :as state]))
 
-(defn compute-and-set-market
+(defn- compute-and-set-market
   "
   core function of the namespace. takes a vector of scenarios and a market-id. 
   it grabs the vector of event quantities from redis, computes the marginal addition to 
   sumexp in the price function of each atomic increase in each event quantity. 
 
-  sends the vector of increases along with scenarios to state/set-event. 
+  sends the vector of increases for each scenario to state/set-scenario. 
 
   sends the current market sumexp and beta to state/set-market-sum
 
@@ -45,6 +45,16 @@
       (state/set-status-ok market-id))))
 
 (defn robust-compute-and-set-market
+  "
+  only public function of the namespace.
+
+  calls compute-and-set-market, and catches ANY error in the completion of the function, no
+  matter the type of exception. 
+  
+  if there is no error, robust-compute-and-set-market does nothing additional to 
+  compute-and-set-market. if there is an error, it will set the market's status in redis to
+  'error'
+  "
   [scenarios alpha market-id]
   (do
     (try (compute-and-set-market scenarios alpha market-id)
