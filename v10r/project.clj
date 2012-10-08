@@ -14,4 +14,4 @@
                  [criterium "0.3.0"]
                  [org.codehaus.jsr166-mirror/jsr166y "1.7.0"]]
   :java-source-paths ["src/v10r/java"]
-  :main v10r.compute)
+  :main v10r.core)

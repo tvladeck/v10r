@@ -55,6 +55,22 @@
           (fn [index item] (vector index item))
           atomic-increase-vector)))))
 
+(defn set-status-error
+  "
+  sets a value in Redis that a market has failed to compute. 
+  used to signal that the market should not be used until it is repaired
+  "
+  [market-id]
+  (carmine (r/hset "Status" market-id "error")))
+
+(defn set-status-ok
+  "
+  sets a value in Redis that a market has computed successfully 
+  used to signal that the market is OK to use. 
+  "
+  [market-id]
+  (carmine (r/hset "Status" market-id "OK")))
+
 (defn send-message
   [channel message]
   (carmine (r/publish channel message)))

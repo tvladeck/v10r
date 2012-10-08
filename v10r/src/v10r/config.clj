@@ -28,6 +28,8 @@
 
 (def INIT-INDIVIDUAL (/ INIT-TOTAL ATOMS))
 
+(def NUMBER-MARKETS 10)
+
 ;;;;;;;;;;;;;;;;;;;;;;;NON APP HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn create-market
   [key no-events]
@@ -36,4 +38,11 @@
 (defn create-markets
   [no-events no-markets]  (map #(create-market % no-events) (range 0 no-markets))
   (map #(create-market % no-events) (range 0 no-markets)))
+
+(defn testfn
+  [number string]
+  (try (+ number string)
+  (catch Exception exception-name (print "error caught"))
+  (finally (print "finally"))))
+
 

@@ -42,18 +42,14 @@
         (map
           (fn [index]
             (state/set-scenario (i/$ index sumexp-diff) index market-id))
-          (range 0 num-scenarios))))))
+          (range 0 num-scenarios)))
+      (state/set-status-ok market-id))))
 
-(defn compute-and-set-market-with-message
-  [scenarios alpha market-id message]
-  (do
-    (compute-and-set-market scenarios alpha market-id)
-    (state/send-message market-id message)))
-
-(defn infinite-loop
+(defn robust-compute-and-set-market
   [scenarios alpha market-id]
-  (loop [message 1]
-    (compute-and-set-market-with-message
-      scenarios alpha market-id message)
-    (recur (+ message 1))))
+  (do
+    (try (compute-and-set-market scenarios alpha market-id)
+      (catch Exception exception-name (state/set-status-error market-id)))
+    (state/send-message "cycles" (.toString (java.util.Date.)))))
+
 
