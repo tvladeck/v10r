@@ -36,19 +36,19 @@
         sumexp-diff       (i/minus mapped-scens market-dummy)
         market-sum        (i/sum exp-normed-market)
         num-scenarios     (count scenarios)]
-    (state/set-market-sum market-id market-sum beta)
-    (doall
-      (map
-        (fn [index]
-          (state/set-scenario (i/$ index sumexp-diff) index market-id))
-        (range 0 num-scenarios)))))
+    (do
+      (state/set-market-sum market-id market-sum beta)
+      (doall
+        (map
+          (fn [index]
+            (state/set-scenario (i/$ index sumexp-diff) index market-id))
+          (range 0 num-scenarios))))))
 
 (defn compute-and-set-market-with-message
   [scenarios alpha market-id message]
   (do
     (compute-and-set-market scenarios alpha market-id)
     (state/send-message market-id message)))
-
 
 (defn infinite-loop
   [scenarios alpha market-id]

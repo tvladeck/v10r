@@ -20,7 +20,7 @@
 
 (def ATOMS (Math/pow 2 BASE))
 
-(def ALPHA (/ 0.1 (* ATOMS (Math/log ATOMS))))
+(def ALPHA (/ 0.1 (* (Math/log ATOMS))))
 
 (def INIT-BETA 1000)
 
