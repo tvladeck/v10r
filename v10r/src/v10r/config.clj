@@ -28,7 +28,7 @@
 
 (def INIT-INDIVIDUAL (/ INIT-TOTAL ATOMS))
 
-(def NUMBER-MARKETS 10)
+(def NUMBER-MARKETS 100)
 
 ;;;;;;;;;;;;;;;;;;;;;;;NON APP HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn create-market
@@ -42,7 +42,7 @@
 (defn testfn
   [number string]
   (try (+ number string)
-  (catch Exception exception-name (print "error caught"))
+  (catch Exception exception-name (print (.toString exception-name)))
   (finally (print "finally"))))
 
 

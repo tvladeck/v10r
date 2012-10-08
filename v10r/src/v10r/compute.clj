@@ -1,8 +1,7 @@
 (ns v10r.compute
   (:use v10r.config)
   (:require [incanter.core :as i])
-  (:require [v10r.state :as state])
-  (:require [clojure.core.reducers :as par]))
+  (:require [v10r.state :as state]))
 
 (defn compute-and-set-market
   "
@@ -12,7 +11,7 @@
 
   sends the vector of increases along with scenarios to state/set-event. 
 
-  sends the current market sumexp to state/set-market-sum
+  sends the current market sumexp and beta to state/set-market-sum
 
   calculation works as follows
 
@@ -20,10 +19,10 @@
         = beta * log sum_i (exp q_i / beta) * (exp d_i / beta) - beta * log sum_i exp q_i / beta
         = beta * log sum_i (exp q_i / beta) + sumexp-diff - beta * log sum_i exp q_i / beta
 
-  mapped-scens = (exp q_i / beta) * (exp d_i / beta)
-  exp-normed-market = exp q_i / beta
   sumexp-diff = (exp q_i / beta) * (exp d_i / beta) - exp q_i / beta
   market-sum = log sum_i exp q_i / beta
+
+  Finally, if the function completes, it sets the market's status as 'OK'
 
   "
   [scenarios alpha market-id]

@@ -13,11 +13,17 @@
 
 (defn get-market
   "
-  takes a market-id and returns a vector of event quantities within the market
+  takes a market-id and returns an ordered sequence of event quantities within the market
+
+  Importantly, preserves ordering, which is why HMGET is applied to a sequence
+  of position IDs, as opposed to just using HVALS, which does not preserve ordering
   "
   [market-id]
   (map #(Integer/parseInt %)
-       (carmine (r/hvals market-id))))
+       (carmine (apply
+                    r/hmget
+                      market-id
+                        (range 0 ATOMS)))))
 
 (defn create-redis-keyword
   "
