@@ -48,7 +48,7 @@
 
   calls compute-and-set-market, and catches ANY error in the completion of the function, no
   matter the type of exception. 
-  
+
   if there is no error, robust-compute-and-set-market does nothing additional to 
   compute-and-set-market. if there is an error, it will set the market's status in redis to
   'error'
