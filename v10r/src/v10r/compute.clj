@@ -23,7 +23,6 @@
   market-sum = log sum_i exp q_i / beta
 
   Finally, if the function completes, it sets the market's status as 'OK'
-
   "
   [scenarios alpha market-id]
   (let [market            (state/get-market market-id)

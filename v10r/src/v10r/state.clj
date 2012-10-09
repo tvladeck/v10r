@@ -78,6 +78,9 @@
   (carmine (r/hset "Status" market-id "OK")))
 
 (defn send-message
+  "
+  Just a wrapper around redis' PUBLISH
+  "
   [channel message]
   (carmine (r/publish channel message)))
 

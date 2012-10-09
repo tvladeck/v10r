@@ -13,7 +13,6 @@
   error, this gets handled by 'robust-compute-and-set-market'
 
   After each cycle, sends the message 'full-cycle' to the redis channel 'cycles'
-
   "
   []
   (loop []
