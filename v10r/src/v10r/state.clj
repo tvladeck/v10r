@@ -19,7 +19,7 @@
   of position IDs, as opposed to just using HVALS, which does not preserve ordering
   "
   [market-id]
-  (map #(Integer/parseInt %)
+  (map #(BigInteger. %)
        (carmine (apply
                     r/hmget
                       market-id
