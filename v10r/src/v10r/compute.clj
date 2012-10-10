@@ -32,13 +32,15 @@
         mapped-scens      (i/mmult exp-normed-market (i/trans exp-normed-scens))
         market-dummy      (i/trans (repeat (count scenarios) exp-normed-market))
         sumexp-diff       (i/minus mapped-scens market-dummy)
+        logsumexp-diff    (i/log sumexp-diff)
         market-sum        (i/sum exp-normed-market)
+        logmarket-sum     (i/log market-sum)
         num-scenarios     (count scenarios)]
     (do
-      (state/set-market-sum market-id market-sum beta)
+      (state/set-market-sum market-id logmarket-sum beta)
       (doseq
         [index (range 0 num-scenarios)]
-        (state/set-scenario (i/$ index sumexp-diff) index market-id))
+        (state/set-scenario (i/$ index logsumexp-diff) index market-id))
       (state/set-status-ok market-id))))
 
 (defn robust-compute-and-set-market
