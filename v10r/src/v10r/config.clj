@@ -31,12 +31,3 @@
 
 (def NUMBER-MARKETS 100)
 
-;;;;;;;;;;;;;;;;;;;;;;;NON APP HELPER FUNCTIONS;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn create-market
-  [key no-events]
-  (map #(carmine (r/hset key % 10)) (range 0 no-events)))
-
-(defn create-markets
-  [no-events no-markets]  (map #(create-market % no-events) (range 0 no-markets))
-  (map #(create-market % no-events) (range 0 no-markets)))
-

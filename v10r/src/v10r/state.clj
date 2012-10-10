@@ -3,13 +3,20 @@
   (:require [clojure.string :as string])
   (:use v10r.config))
 
+(defn create-redis-market-keyword
+  "
+  creates the id used to store sum, start, and beta values in redis
+  "
+  [market-id]
+  (string/join ["M" market-id]))
+
 (defn set-market-sum
   "
-  takes a market-id and sets the initial sum and liquidity of the market
+  takes a market-id and sets the startial sum and liquidity of the market
   "
   [market-id sum beta]
   (carmine
-    (r/hmset (string/join ["M" market-id]) "SUM" sum "BETA" beta)))
+    (r/hmset (create-redis-market-keyword market-id) "SUM" sum "BETA" beta)))
 
 (defn get-market
   "
@@ -25,7 +32,27 @@
                       market-id
                         (range 0 ATOMS)))))
 
-(defn create-redis-keyword
+(defn increment
+  [market-id pos-id incr]
+  (carmine (r/hincrby pos-id incr)))
+
+(defn get-start
+  "
+  gets the 'start' value of the market, which is used to rebalance the market.
+  "
+  [market-id]
+  (carmine
+    (r/hget (create-redis-market-keyword market-id) "START")))
+
+(defn set-start
+  "
+  sets the 'start' value of the market
+  "
+  [market-id start]
+  (carmine
+    (r/hset (create-redis-market-keyword market-id) "start" init)))
+
+(defn create-redis-scenario-keyword
   "
   creates the keyword that will serve to identify an markets price vector and a scenario
   in the redis store
@@ -55,7 +82,7 @@
   [atomic-increase-vector scenario market-id]
   (carmine
     (apply r/hmset
-      (create-redis-keyword market-id scenario) 
+      (create-redis-scenario-keyword market-id scenario) 
       (flatten
         (map-indexed
           (fn [index item] (vector index item))

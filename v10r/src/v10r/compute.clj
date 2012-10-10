@@ -15,7 +15,7 @@
 
   calculation works as follows
 
-  DELTA = INIT-INDIVIDUAL + beta * log sum_i exp (q_i + d_i) / beta - INIT-INDVIDUAL + beta * log sum_i exp q_i / beta
+  DELTA = START + beta * log sum_i exp (q_i + d_i) / beta - START + beta * log sum_i exp q_i / beta
         = beta * log sum_i (exp q_i / beta) * (exp d_i / beta) - beta * log sum_i exp q_i / beta
         = beta * log sum_i (exp q_i / beta) + sumexp-diff - beta * log sum_i exp q_i / beta
 
@@ -26,7 +26,8 @@
   "
   [scenarios alpha market-id]
   (let [market            (state/get-market market-id)
-        beta              (* alpha (+ INIT-TOTAL (i/sum market)))
+        start             (state/get-start market-id)
+        beta              (* alpha (+ (* start ATOMS) (i/sum market)))
         exp-normed-market (i/exp (i/div market beta))
         exp-normed-scens  (i/exp (i/div scenarios beta))
         mapped-scens      (i/mmult exp-normed-market (i/trans exp-normed-scens))
