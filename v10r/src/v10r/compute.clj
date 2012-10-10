@@ -46,16 +46,16 @@
   only public function of the namespace.
 
   calls compute-and-set-market, and catches ANY error in the completion of the function, no
-  matter the type of exception. 
+  matter the type of exception.
 
-  if there is no error, robust-compute-and-set-market does nothing additional to 
+  if there is no error, robust-compute-and-set-market does nothing additional to
   compute-and-set-market. if there is an error, it will set the market's status in redis to
   'error'
   "
   [scenarios alpha market-id]
   (do
     (try (compute-and-set-market scenarios alpha market-id)
-      (catch Exception exception-name (state/set-status-error market-id)))
+      (catch Exception _ (state/set-status-error market-id)))
     (state/send-message "cycles" (.toString (java.util.Date.)))))
 
 

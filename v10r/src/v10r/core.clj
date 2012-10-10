@@ -21,5 +21,5 @@
             (par/map
                  #(robust-compute-and-set-market SCENARIOS ALPHA %) 
                  (range 0 NUMBER-MARKETS)))
-    (send-message "cycles" "full-cycle")
-    (recur))))
+      (send-message "cycles" "full-cycle"))
+    (recur)))
