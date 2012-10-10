@@ -66,8 +66,8 @@
   sets a value in Redis that a market has failed to compute. 
   used to signal that the market should not be used until it is repaired
   "
-  [market-id]
-  (carmine (r/hset "Status" market-id "error")))
+  [market-id error-message]
+  (carmine (r/hset "Status" market-id (string/join ["error:" error-message]))))
 
 (defn set-status-ok
   "

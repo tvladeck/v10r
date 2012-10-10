@@ -57,7 +57,7 @@
   [scenarios alpha market-id]
   (do
     (try (compute-and-set-market scenarios alpha market-id)
-      (catch Exception _ (state/set-status-error market-id)))
+      (catch Exception exception-name (state/set-status-error market-id exception-name)))
     (state/send-message "cycles" (.toString (java.util.Date.)))))
 
 
