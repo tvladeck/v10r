@@ -26,7 +26,7 @@
   of position IDs, as opposed to just using HVALS, which does not preserve ordering
   "
   [market-id]
-  (map #(BigInteger. %)
+  (map #(Double. %)
        (carmine (apply
                     r/hmget
                       market-id
@@ -41,16 +41,9 @@
   gets the 'start' value of the market, which is used to rebalance the market.
   "
   [market-id]
-  (carmine
-    (r/hget (create-redis-market-keyword market-id) "START")))
-
-(defn set-start
-  "
-  sets the 'start' value of the market
-  "
-  [market-id start]
-  (carmine
-    (r/hset (create-redis-market-keyword market-id) "start" init)))
+  (Double.
+    (carmine
+      (r/hget (create-redis-market-keyword market-id) "START"))))
 
 (defn create-redis-scenario-keyword
   "
