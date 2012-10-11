@@ -5,6 +5,7 @@ gem 'redis', "~> 3.0.1"
 gem 'sqlite3'
 gem 'json'
 gem 'gsl'
+gem 'algorithms'
 
 group :assets do
   gem 'sass-rails',   '~> 3.2.3'
