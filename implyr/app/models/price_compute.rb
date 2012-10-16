@@ -4,8 +4,9 @@ class PriceCompute
   include MarketParams
   include GSL::Sf
 
-  def initialize(array)
-    @markets = MarketParams.markets_in_play(array)
+  def initialize(position)
+    @markets = MarketParams.markets_in_play(position)
+    @position = position
   end
 
   def compute_price_change

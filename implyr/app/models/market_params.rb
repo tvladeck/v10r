@@ -10,7 +10,7 @@ module MarketParams
       2 => [5, 6, 7, 8, 9, 10, 11, 12, 13, 14] }
   end
 
-  def markets_in_play(positions)
+  def markets_in_play(position)
     # this method returns an array of markets that contain each of the
     # base events given
     markets = self.markets
@@ -19,7 +19,7 @@ module MarketParams
       !self.inclusion_test(base_events, position)
     end
 
-    markets_in_play
+    markets_in_play.keys
 
   end
 
