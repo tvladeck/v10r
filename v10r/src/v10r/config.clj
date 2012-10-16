@@ -15,7 +15,7 @@
   [& body] `(r/with-conn pool spec-server1 ~@body))
 
 ;;;;;;;;;;;;;;;;;;;;;;;CONSTANTS;;;;;;;;;;;;;;;;;;;;;;;;;; 
-(def SCENARIOS [-10 10])
+(def SCENARIOS [1 10])
 
 (def BASE 10)
 

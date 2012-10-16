@@ -27,7 +27,7 @@
   [scenarios alpha market-id]
   (let [market            (state/get-market market-id)
         start             (state/get-start market-id)
-        beta              (* alpha (+ (* start ATOMS) (i/sum market)))
+        beta              (* ALPHA (+ (* start ATOMS) (i/sum market)))
         exp-normed-market (i/exp (i/div market beta))
         exp-normed-scens  (i/exp (i/div scenarios beta))
         mapped-scens      (i/mmult exp-normed-market (i/trans exp-normed-scens))
