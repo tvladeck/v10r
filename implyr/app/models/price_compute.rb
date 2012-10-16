@@ -5,12 +5,12 @@ class PriceCompute
   include GSL::Sf
 
   def initialize(position)
-    @markets = MarketParams.markets_in_play(position)
+    @markets = markets_in_play(position)
     @position = position
   end
 
   def compute_price_change
-
+    
   end
 
 end
