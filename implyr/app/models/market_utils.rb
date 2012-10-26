@@ -4,11 +4,44 @@ module MarketUtils
   include MarketParams
 
 
-  def partial_position_stack(market, partial_position)
-    # takes a full position, which is of the form
+  def composition_position_stack(market, composed_position)
+    # Args: 
+    #   market: the integer identifying the relevant market
+    #   composed_position: a hash of the form:
+    #     { :if => multi_position, :then => multi_position }
+    # Returns: 
+    #   a hash of the form
+    #     { :buy => multi_position_stack, :sell => multi_position_stack }
+    composed_stack  = {}
+    if_part         = composed_position[:if]
+    then_part       = composed_position[:then]
+    reversed_then   = then_part.map do |partial|
+      { :and => partial[:and_not], :and_not => partial[:and] }
+    end
+
+    purchase_order  = multi_position_stack(market, then_part) & multi_position_stack(market, if_part)
+    sale_order      = multi_position_stack(market, reversed_then) & multi_position_stack(market, if_part)
+
+    composed_stack[:buy]  = purchase_order
+    composed_stack[:sell] = sale_order
+
+    composed_stack
+  end
+
+
+
+  def multi_position_stack(market, multi_position)
+    # takes an array of hashes, each of the form
     # { :and => [events], :and_not => [events] }
-    # and returns a hash of the form
-    # { :market => :positions }
+    # and returns, for a given market, the matching position stack
+    stack = multi_position.map { |entry| partial_position_stack(market, entry) }.
+                              reduce { |a, b| a | b }
+    stack
+  end
+
+  def partial_position_stack(market, partial_position)
+    # takes a partial position, which is of the form
+    # { :and => [events], :and_not => [events] }
     and_events     = partial_position[:and]
     and_not_events = partial_position[:and_not]
     and_vector_positions(market, and_events) &
