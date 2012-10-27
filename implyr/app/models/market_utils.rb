@@ -3,6 +3,29 @@ module MarketUtils
   require 'gsl'
   include MarketParams
 
+  def multi_market_stack(position)
+    if_part = position[:if]
+    then_part = position[:then]
+    
+    base_events = []
+    if_part.each do |p|
+      base_events = base_events | p[:and] | p[:and_not]
+    end
+    then_part.each do |p|
+      base_events = base_events | p[:and] | p[:and_not]    
+    end
+
+    markets = markets_in_play base_events
+
+    multi_market_stack = {}
+    markets.each do |m|
+      multi_market_stack[m] = composition_position_stack(m, position)
+    end
+  
+    multi_market_stack
+  end
+    
+  
 
   def composition_position_stack(market, composed_position)
     # Args: 
