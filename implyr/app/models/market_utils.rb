@@ -9,7 +9,27 @@ module MarketUtils
     # each market is a row, each scenario is a column
     # market_stack = multi_market_stack(position)
     # market_stack.each do |k,v|
+    output = {}
+    market_stack = multi_market_stack position
+    SCENARIOS.each do |scen_id, amount|
+      market_diffs = market_stack.each do |market_id, stack|
+        compute_single_market_change market_id, stack
+      end
+
+    end
   end
+
+  def compute_single_market_change(market_id, scen_id, stack)
+    logmarket_sum   = @redis.hget("M#{market_id}", "SUM").to_f
+    market_sum      = GSL::Sf.exp logmarket_sum
+    market_beta     = @redis.hget("M#{market_id}", "BETA").to_f
+    logdiffs        = @redis.hmget("M#{market_id}S#{scen_id}", *stack).map { |s| s.to_f }
+    diffs           = GSL::Sf.exp logdiffs
+    diffsum         = diffs.sum
+    pricediff       = market_beta * (GSL::Sf.log(market_sum + diffsum) - logmarket_sum)
+    pricediff
+  end
+
 
   def multi_market_stack(position)
     if_part = position[:if]
@@ -20,7 +40,7 @@ module MarketUtils
       base_events = base_events | p[:and] | p[:and_not]
     end
     then_part.each do |p|
-      base_events = base_events | p[:and] | p[:and_not]    
+      base_events = base_events | p[:and] | p[:and_not]
     end
 
     markets = markets_in_play base_events
@@ -106,7 +126,7 @@ module MarketUtils
 
     # this returns the position list "normalized" for the base events'
     # placement within the market
-    positioning = position.map { |p| (GSL::sign(p)) * (base_list.find_index(p.abs)) }
+    positioning = position.map { |p| GSL::sign(p) * (base_list.find_index(p.abs)) }
 
     position_map = {}
     positioning.each do |p|

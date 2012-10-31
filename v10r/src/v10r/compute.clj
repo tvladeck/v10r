@@ -25,18 +25,18 @@
   Finally, if the function completes, it sets the market's status as 'OK'
   "
   [scenarios alpha market-id]
-  (let [market            (state/get-market market-id)
-        start             (state/get-start market-id)
-        beta              (* ALPHA (+ (* start ATOMS) (i/sum market)))
-        exp-normed-market (i/exp (i/div market beta))
-        exp-normed-scens  (i/exp (i/div scenarios beta))
-        mapped-scens      (i/mmult exp-normed-market (i/trans exp-normed-scens))
-        market-dummy      (i/trans (repeat (count scenarios) exp-normed-market))
-        sumexp-diff       (i/minus mapped-scens market-dummy)
-        logsumexp-diff    (i/log sumexp-diff)
-        market-sum        (i/sum exp-normed-market)
-        logmarket-sum     (i/log market-sum)
-        num-scenarios     (count scenarios)]
+  (let [market                (state/get-market market-id)
+        start                 (state/get-start market-id)
+        beta                  (* ALPHA (+ (* start ATOMS) (i/sum market)))
+        exp-normed-market     (i/exp (i/div market beta))
+        exp-normed-scens      (i/exp (i/div scenarios beta))
+        mapped-scens          (i/mmult exp-normed-market (i/trans exp-normed-scens))
+        market-dummy          (i/trans (repeat (count scenarios) exp-normed-market))
+        sumexp-diff           (i/minus mapped-scens market-dummy)
+        logsumexp-diff        (i/log sumexp-diff)
+        no-start-market-sum   (i/sum exp-normed-market)
+        logmarket-sum         (+ start (i/log no-start-market-sum))
+        num-scenarios         (count scenarios)]
     (do
       (state/set-market-sum market-id logmarket-sum beta)
       (doseq
