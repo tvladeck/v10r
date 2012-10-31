@@ -12,11 +12,14 @@ module MarketUtils
     output = {}
     market_stack = multi_market_stack position
     SCENARIOS.each do |scen_id, amount|
-      market_diffs = market_stack.each do |market_id, stack|
-        compute_single_market_change market_id, stack
+      market_diffs = market_stack.map do |market_id, stack|
+        compute_single_market_change market_id, scen_id, stack
       end
-
+      market_diffs = GSL::Vector[market_diffs]
+      avg_price_diff = market_diffs.average
+      output[scen_id] = avg_price_diff
     end
+    output
   end
 
   def compute_single_market_change(market_id, scen_id, stack)
