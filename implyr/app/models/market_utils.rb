@@ -106,7 +106,7 @@ module MarketUtils
 
     # this returns the position list "normalized" for the base events'
     # placement within the market
-    positioning = position.map { |p| (p <=> 0) * (base_list.find_index(p.abs)) }
+    positioning = position.map { |p| (GSL::sign(p)) * (base_list.find_index(p.abs)) }
 
     position_map = {}
     positioning.each do |p|
