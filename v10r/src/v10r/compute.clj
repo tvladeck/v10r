@@ -34,8 +34,8 @@
         market-dummy          (i/trans (repeat (count scenarios) exp-normed-market))
         sumexp-diff           (i/minus mapped-scens market-dummy)
         logsumexp-diff        (i/log sumexp-diff)
-        no-start-market-sum   (i/sum exp-normed-market)
-        logmarket-sum         (+ start (i/log no-start-market-sum))
+        market-sum            (i/sum exp-normed-market)
+        logmarket-sum         (i/log market-sum)
         num-scenarios         (count scenarios)]
     (do
       (state/set-market-sum market-id logmarket-sum beta)
