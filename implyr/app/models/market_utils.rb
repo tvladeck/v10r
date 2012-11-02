@@ -1,23 +1,17 @@
 module MarketUtils
-  require 'redis'
   require 'gsl'
   include MarketParams
 
-
   def compute_price(position)
-    # end result is to want prices in a market x scenarios matrix
-    # each market is a row, each scenario is a column
-    # market_stack = multi_market_stack(position)
-    # market_stack.each do |k,v|
-    output = {}
-    market_stack = multi_market_stack position
+    output            = {}
+    market_stack      = multi_market_stack position
     SCENARIOS.each do |scen_id, amount|
-      market_diffs = market_stack.map do |market_id, stack|
+      market_diffs    = market_stack.map do |market_id, stack|
         compute_single_market_change market_id, scen_id, stack
       end
-      market_diffs = GSL::Vector[market_diffs]
-      avg_price_diff = market_diffs.average
-      output[scen_id] = avg_price_diff
+      market_diffs    = GSL::Vector[market_diffs]
+      avg_price_diff  = market_diffs.average
+      output[amount]  = avg_price_diff
     end
     output
   end
@@ -33,22 +27,21 @@ module MarketUtils
     pricediff
   end
 
-
   def multi_market_stack(position)
-    if_part = position[:if]
-    then_part = position[:then]
+    if_part             = position[:if]
+    then_part           = position[:then]
 
-    base_events = []
+    base_events         = []
     if_part.each do |p|
-      base_events = base_events | p[:and] | p[:and_not]
+      base_events       = base_events | p[:and] | p[:and_not]
     end
     then_part.each do |p|
-      base_events = base_events | p[:and] | p[:and_not]
+      base_events       = base_events | p[:and] | p[:and_not]
     end
 
-    markets = markets_in_play base_events
+    markets             = markets_in_play base_events
 
-    multi_market_stack = {}
+    multi_market_stack  = {}
     markets.each do |m|
       multi_market_stack[m] = composition_position_stack(m, position)
     end
@@ -57,11 +50,11 @@ module MarketUtils
   end
 
   def composition_position_stack(market, composed_position)
-    # Args: 
+    # Args:
     #   market: the integer identifying the relevant market
     #   composed_position: a hash of the form:
     #     { :if => multi_position, :then => multi_position }
-    # Returns: 
+    # Returns:
     #   a hash of the form
     #     { :buy => multi_position_stack, :sell => multi_position_stack }
     composed_stack  = {}
@@ -79,8 +72,6 @@ module MarketUtils
 
     composed_stack
   end
-
-
 
   def multi_position_stack(market, multi_position)
     # takes an array of hashes, each of the form
