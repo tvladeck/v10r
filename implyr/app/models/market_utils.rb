@@ -5,18 +5,27 @@ module MarketUtils
   def compute_price(position)
     output            = {}
     market_stack      = multi_market_stack position
+    signs             = [:buy, :sell]
     SCENARIOS.each do |scen_id, amount|
-      market_diffs    = market_stack.map do |market_id, stack|
-        compute_single_market_change market_id, scen_id, stack
+      output[amount]  = {}
+      signs.each do |sign|
+        output[amount][sign]  = compute_partial_price sign, scen_id, market_stack
       end
-      market_diffs    = GSL::Vector[market_diffs]
-      avg_price_diff  = market_diffs.average
-      output[amount]  = avg_price_diff
     end
     output
   end
 
+  def compute_partial_price(sign, scen_id, market_stack)
+    market_diffs      = market_stack.map do |market_id, stack|
+      compute_single_market_change market_id, scen_id, stack[sign]
+    end
+    market_diffs    = GSL::Vector[market_diffs]
+    avg_price_diff  = market_diffs.average
+    avg_price_diff
+  end
+
   def compute_single_market_change(market_id, scen_id, stack)
+    if stack == [] || stack.nil? then return 0 end
     logmarket_sum   = @redis.hget("M#{market_id}", "SUM").to_f
     market_sum      = GSL::Sf.exp logmarket_sum
     market_beta     = @redis.hget("M#{market_id}", "BETA").to_f
@@ -64,8 +73,13 @@ module MarketUtils
       { :and => partial[:and_not], :and_not => partial[:and] }
     end
 
-    purchase_order  = multi_position_stack(market, then_part) & multi_position_stack(market, if_part)
-    sale_order      = multi_position_stack(market, reversed_then) & multi_position_stack(market, if_part)
+    full_stack          = (0..(atoms-1)).to_a
+    then_stack          = multi_position_stack(market, then_part) || full_stack
+    if_stack            = multi_position_stack(market, if_part) || full_stack
+    reversed_then_stack = multi_position_stack(market, reversed_then) || full_stack
+
+    purchase_order  = then_stack & if_stack
+    sale_order      = reversed_then_stack & if_stack
 
     composed_stack[:buy]  = purchase_order
     composed_stack[:sell] = sale_order
@@ -108,6 +122,9 @@ module MarketUtils
     # returns the complement of and_vector_positions
     # returns all vector positions where not all of the base events specified 
     # in the position occur
+    full_stack = (0..(atoms-1)).to_a
+    if position == [] then return full_stack end
+
     (0..(atoms-1)).to_a - and_vector_positions(market, position)
   end
 
@@ -116,6 +133,9 @@ module MarketUtils
     # that the position corresponds to within a given market
     # position is an array of base events, with a sign to indicate if the
     # base event is ON or OFF
+    full_stack = (0..(atoms-1)).to_a
+    if position == [] then return full_stack end
+
     base_list = markets[market]
 
     # this returns the position list "normalized" for the base events'
